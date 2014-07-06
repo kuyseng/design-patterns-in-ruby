@@ -17,16 +17,7 @@ end
 
 class SimplePizzaFactory
   def create_pizza(pizza_type)
-    case pizza_type.downcase
-    when "cheese"
-      CheesePizza.new
-    when "clam"
-      ClamPizza.new
-    when "veggie"
-      VeggiePizza.new
-    else
-      raise "Unknown"
-    end
+    self.class.const_get("#{pizza_type.capitalize}Pizza").new
   end
 end
 
