@@ -1,23 +1,27 @@
 class PizzaStore
-  attr_accessor :factory
-
-  def initialize(factory)
-    @factory = factory
-  end
-
   def order_pizza(pizza_type)
-    pizza = factory.create_pizza(pizza_type)
+    pizza = create_pizza(pizza_type)
     pizza.prepare
     pizza.bake
     pizza.cut
     pizza.box
     pizza
   end
+
+  def create_pizza(pizza_type)
+    raise "need to implement"
+  end
 end
 
-class SimplePizzaFactory
+class NYPizzaStore < PizzaStore
   def create_pizza(pizza_type)
-    self.class.const_get("#{pizza_type.capitalize}Pizza").new
+    self.class.const_get("NYStyle#{pizza_type.capitalize}Pizza").new
+  end
+end
+
+class ChicagoPizzaStore < PizzaStore
+  def create_pizza(pizza_type)
+    self.class.const_get("ChicagoStyle#{pizza_type.capitalize}Pizza").new
   end
 end
 
@@ -36,20 +40,38 @@ class Pizza
   end
 end
 
-class CheesePizza < Pizza
+class NYStyleCheesePizza < Pizza
   def prepare
-    "prepare for cheese pizza"
+    "prepare for cheese pizza of NY style"
   end
 end
 
-class ClamPizza < Pizza
+class NYStyleClamPizza < Pizza
   def prepare
-    "prepare for clam pizza"
+    "prepare for clam pizza of NY style"
   end
 end
 
-class VeggiePizza < Pizza
+class NYStyleVeggiePizza < Pizza
   def prepare
-    "prepare for veggie pizza"
+    "prepare for veggie pizza of Chicago style"
+  end
+end
+
+class ChicagoStyleCheesePizza < Pizza
+  def prepare
+    "prepare for cheese pizza of Chicago style"
+  end
+end
+
+class ChicagoStyleClamPizza < Pizza
+  def prepare
+    "prepare for clam pizza of Chicago style"
+  end
+end
+
+class ChicagoStyleVeggiePizza < Pizza
+  def prepare
+    "prepare for veggie pizza of Chicago style"
   end
 end
