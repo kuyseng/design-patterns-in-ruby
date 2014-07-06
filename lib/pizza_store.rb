@@ -1,6 +1,12 @@
 class PizzaStore
+  attr_accessor :factory
+
+  def initialize(factory)
+    @factory = factory
+  end
+
   def order_pizza(pizza_type)
-    pizza = SimplePizzaFactory.create_pizza(pizza_type)
+    pizza = factory.create_pizza(pizza_type)
     pizza.prepare
     pizza.bake
     pizza.cut
@@ -10,7 +16,7 @@ class PizzaStore
 end
 
 class SimplePizzaFactory
-  def self.create_pizza(pizza_type)
+  def create_pizza(pizza_type)
     case pizza_type.downcase
     when "cheese"
       CheesePizza.new
