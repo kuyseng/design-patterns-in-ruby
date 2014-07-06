@@ -1,20 +1,26 @@
 class PizzaStore
   def order_pizza(pizza_type)
-    pizza = case pizza_type.downcase
-            when "cheese"
-              CheesePizza.new
-            when "clam"
-              ClamPizza.new
-            when "veggie"
-              VeggiePizza.new
-            else
-              raise "Unknown"
-            end
+    pizza = SimplePizzaFactory.create_pizza(pizza_type)
     pizza.prepare
     pizza.bake
     pizza.cut
     pizza.box
     pizza
+  end
+end
+
+class SimplePizzaFactory
+  def self.create_pizza(pizza_type)
+    case pizza_type.downcase
+    when "cheese"
+      CheesePizza.new
+    when "clam"
+      ClamPizza.new
+    when "veggie"
+      VeggiePizza.new
+    else
+      raise "Unknown"
+    end
   end
 end
 
