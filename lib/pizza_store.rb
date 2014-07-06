@@ -1,4 +1,6 @@
 class PizzaStore
+  attr_accessor :ingredient_factory
+
   def order_pizza(pizza_type)
     pizza = create_pizza(pizza_type)
     pizza.prepare
@@ -14,64 +16,116 @@ class PizzaStore
 end
 
 class NYPizzaStore < PizzaStore
+  def initialize
+    @ingredient_factory = NYPizzaIngredientFactory.new
+  end
+
   def create_pizza(pizza_type)
-    self.class.const_get("NYStyle#{pizza_type.capitalize}Pizza").new
+    # CheesePizza.new(ingredient_factory)
+    self.class.const_get("#{pizza_type.capitalize}Pizza").new(ingredient_factory)
   end
 end
 
 class ChicagoPizzaStore < PizzaStore
+  def initialize
+    @ingredient_factory = ChicagoPizzaIngredientFactory.new
+  end
+  
   def create_pizza(pizza_type)
-    self.class.const_get("ChicagoStyle#{pizza_type.capitalize}Pizza").new
+    # ClamPizza.new(ingredient_factory)
+    self.class.const_get("#{pizza_type.capitalize}Pizza").new(ingredient_factory)
   end
 end
 
+class PizzaIngredientFactory
+  def create_dough; raise_to_implement  end
+  def create_sauce; raise_to_implement  end
+  def create_cheese; raise_to_implement end
+  def create_veggies; raise_to_implement end
+  def create_peperoni; raise_to_implement end
+  def create_clam; raise_to_implement end
+
+  private
+  def raise_to_implement
+    raise "need to implement"
+  end
+end
+
+class NYPizzaIngredientFactory < PizzaIngredientFactory
+  def create_dough;  ThinCrustDough.new end
+  def create_sauce;  MarinaraSauce.new  end
+  def create_cheese; ReggianoCheese.new end
+  def create_veggies
+    [ Garlic.new, Mushroom.new ]
+  end
+  def create_pepperoni; SlicedPepperoni.new end
+  def create_clam; FreshClams.new end
+end
+
+class ChicagoPizzaIngredientFactory < PizzaIngredientFactory 
+  def create_dough; ThickCrustDough.new end
+  def create_sauce; PlumTomatoSauce.new end
+  def create_cheese; MozzarellaCheese.new end
+  def create_veggies
+    [ BlackOlives.new, Eggplant.new ]
+  end
+  def create_pepperoni; SlicedPepperoni.new end
+  def create_clam; FrozenClams.new end
+end
+
 class Pizza
+  attr_accessor :ingredient_factory, :name, :dough,
+                :sauce, :cheese, :veggie, :pepperoni, :clam
+
+  def initialize(ingredient_factory)
+    @ingredient_factory = ingredient_factory;
+  end
   def prepare
     raise "need to implement"
   end
   def bake
-    "bake.."
+    puts "Bake for 25 minutes at 350"
   end
   def cut
-    "cutt.."
+    puts "Cutting the pizza into diagonal slices"
   end
   def box
-    "put in box.."
+    puts "Place pizza in official PizzaStore box"
   end
 end
 
-class NYStyleCheesePizza < Pizza
+class CheesePizza < Pizza 
   def prepare
-    "prepare for cheese pizza of NY style"
+    puts "Preparing #{name}"
+    @dough  = ingredient_factory.create_dough
+    @sauce  = ingredient_factory.create_sauce
+    @cheese = ingredient_factory.create_cheese
   end
 end
 
-class NYStyleClamPizza < Pizza
+class ClamPizza < Pizza 
+
   def prepare
-    "prepare for clam pizza of NY style"
+    puts "Preparing #{name}"
+    @dough = ingredient_factory.create_dough
+    @sauce = ingredient_factory.create_sauce
+    @cheese = ingredient_factory.create_cheese
+    @clam = ingredient_factory.create_clam
   end
 end
 
-class NYStyleVeggiePizza < Pizza
-  def prepare
-    "prepare for veggie pizza of Chicago style"
-  end
-end
-
-class ChicagoStyleCheesePizza < Pizza
-  def prepare
-    "prepare for cheese pizza of Chicago style"
-  end
-end
-
-class ChicagoStyleClamPizza < Pizza
-  def prepare
-    "prepare for clam pizza of Chicago style"
-  end
-end
-
-class ChicagoStyleVeggiePizza < Pizza
-  def prepare
-    "prepare for veggie pizza of Chicago style"
-  end
-end
+# ingredients
+# NY
+class ThinCrustDough; end
+class MarinaraSauce; end
+class ReggianoCheese; end
+class Garlic; end
+class SlicedPepperoni; end
+class FreshClams; end
+# Chicago
+class ThickCrustDough; end
+class PlumTomatoSauce; end
+class MozzarellaCheese; end
+class BlackOlives; end
+class Eggplant; end
+class FrozenClams; end
